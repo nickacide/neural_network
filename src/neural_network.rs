@@ -16,7 +16,11 @@ impl NeuralNetwork {
         activation_derivative: fn(&Matrix<f32>) -> Matrix<f32>,
     ) -> Self {
         let mut layers: Vec<Layer> = vec![];
-        let input_layer = Layer::new(LayerType::InputLayer(Matrix::from_iter(1, input_size, vec![0.; input_size])));
+        let input_layer = Layer::new(LayerType::InputLayer(Matrix::from_iter(
+            1,
+            input_size,
+            vec![0.; input_size],
+        )));
         layers.push(input_layer);
 
         for (index, width) in hidden_size.iter().enumerate() {
@@ -28,7 +32,10 @@ impl NeuralNetwork {
         }
 
         let height = layers.last().expect("Invalid Neural Network").height();
-        let output_layer = Layer::new(LayerType::OutputLayer(Matrix::from_iter(height, output_size, vec![1.; height * output_size]), Matrix::from_iter(1, output_size, vec![0.; output_size])));
+        let output_layer = Layer::new(LayerType::OutputLayer(
+            Matrix::from_iter(height, output_size, vec![1.; height * output_size]),
+            Matrix::from_iter(1, output_size, vec![0.; output_size]),
+        ));
         layers.push(output_layer);
 
         Self {
@@ -47,58 +54,25 @@ impl NeuralNetwork {
             // let mut new: Vec<f32> = vec![];
             let (weights, biases) = hidden_layer.weights_biases();
             previous = previous * weights + biases;
-            previous = (self.activation)(&previous);
-            // for node in &hidden_layer.nodes {
-            //     let mut sum = 0.;
-            //     for (weight_index, weight) in node.weights.iter().enumerate() {
-            //         sum += previous[weight_index] * weight;
-            //     }
-            //     sum += node.bias;
-            //     new.push((self.activation)(sum));
-            // }
-            // dbg!(previous);
-            // previous = new;
+            // previous = (self.activation)(&previous);
         }
         let output = self.layers.last().expect("Invalid Neural Network");
         let (weights, biases) = output.weights_biases();
         previous * weights + biases
-        // let mut outputs: Vec<f32> = vec![];
-        // for node in &self.layers.last().unwrap().nodes {
-        //     let mut sum = 0.;
-        //     for (weight_index, weight) in node.weights.iter().enumerate() {
-        //         sum += previous[weight_index] * weight;
-        //     }
-        //     sum += node.bias;
-        //     outputs.push(sum);
-        // }
-        // outputs
     }
 
     pub fn cost(&self, training_data: &Vec<(Matrix<f32>, Matrix<f32>)>) -> Matrix<f32> {
         let first = &training_data[0].1;
-        let mut costs = Matrix::from_iter(first.rows(), first.cols(), vec![0.; first.len()]);
+        let mut costs = Matrix::from_iter(first.rows(), 1, vec![0.; first.len()]);
         for (x, y) in training_data {
             let predicted = self.out(x);
             let cost = (&predicted - y) * (&predicted - y);
             costs += cost;
         }
-        costs.apply_mut(|v| *v /= training_data.len() as f32);        
+        costs.apply_mut(|v| *v /= training_data.len() as f32);
         costs
     }
 
-    // pub fn cost(&self, training_data: &Vec<(Matrix<f32>, Matrix<f32>)>) -> Vec<f32> {
-    //     let (rows, c)
-    //     let mut costs: Matrix<f32> = Matrix::from_iter(tra, cols, data);
-    //     for (x, y) in training_data {
-    //         let predicted = self.out(x);
-    //         for (node_index, predicted_node) in predicted.iter().enumerate() {
-    //             let node_cost = (predicted_node - y[node_index]).powi(2);
-    //             costs[node_index] += node_cost;
-    //         }
-    //     }
-    //     costs
-    //         .iter()
-    //         .map(|c| c / training_data.len() as f32)
-    //         .collect()
-    // }
+    // TODO:
+    // Backpropagation
 }
