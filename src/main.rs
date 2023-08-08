@@ -1,24 +1,40 @@
 mod layer;
 mod neural_network;
-mod node;
 
 use neural_network::*;
+use simple_matrix::Matrix;
 
 fn main() {
-    fn softplus(value: f32) -> f32 {
-        (1. + value.exp()).ln()
+    fn softplus(value: &Matrix<f32>) -> Matrix<f32> {
+        // let mut result: Vec<f32> = vec![];
+        // value.apply(|v| result.push((1. + v.exp()).ln()));
+        // Matrix::from_iter(value.rows(), value.cols(), result)
+        let mut clone = value.clone();
+        clone.apply_mut(|v| *v = (1. + v.exp()).ln());
+        clone
     }
-    fn softplus_derivative(value: f32) -> f32 {
-        value.exp() / (1. + value.exp())
+    fn softplus_derivative(value: &Matrix<f32>) -> Matrix<f32> {
+        // let mut result: Vec<f32> = vec![];
+        let mut clone = value.clone();
+        clone.apply_mut(|v| *v = v.exp() / (1. + v.exp()));
+        // Matrix::from_iter(value.rows(), value.cols(), result)
+        clone
     }
 
     let net = NeuralNetwork::new(1, vec![2], 1, softplus, softplus_derivative);
 
-    let out = net.out(&vec![1.])[0];
-    println!("{out}");
+    let out = net.out(&Matrix::from_iter(1, 1, vec![1.]));
+    dbg!(out);
 
-    let training_data: Vec<(Vec<f32>, Vec<f32>)> = vec![(vec![1.], vec![2.]), (vec![0.], vec![0.])];
+    let sample1 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
+    let sample2 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
+    let sample3 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
+    let sample4 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
+
+    let training_data = vec![sample1, sample2, sample3, sample4];
+
     let cost = net.cost(&training_data);
-
-    println!("Cost: {}", cost[0]);
+    
+    // println!("Cost: {}", );
+    dbg!(cost);
 }
