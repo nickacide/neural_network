@@ -5,6 +5,8 @@ use neural_network::*;
 use simple_matrix::Matrix;
 
 fn main() {
+    std::env::set_var("RUST_BACKTRACE", "1");
+
     fn softplus(value: &Matrix<f32>) -> Matrix<f32> {
         // let mut result: Vec<f32> = vec![];
         // value.apply(|v| result.push((1. + v.exp()).ln()));
@@ -26,15 +28,26 @@ fn main() {
     let out = net.out(&Matrix::from_iter(1, 1, vec![1.]));
     dbg!(out);
 
-    let sample1 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
-    let sample2 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
-    let sample3 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
-    let sample4 = (Matrix::from_iter(1, 1, vec![1.]), Matrix::from_iter(1, 1, vec![2.]));
+    let sample1 = (
+        Matrix::from_iter(1, 1, vec![1.]),
+        Matrix::from_iter(1, 1, vec![3.]),
+    );
+    // let sample2 = (
+    //     Matrix::from_iter(1, 1, vec![1.]),
+    //     Matrix::from_iter(1, 1, vec![2.]),
+    // );
+    // let sample3 = (
+    //     Matrix::from_iter(1, 1, vec![1.]),
+    //     Matrix::from_iter(1, 1, vec![2.]),
+    // );
+    // let sample4 = (
+    //     Matrix::from_iter(1, 1, vec![1.]),
+    //     Matrix::from_iter(1, 1, vec![2.]),
+    // );
 
-    let training_data = vec![sample1, sample2, sample3, sample4];
+    let training_data = vec![sample1];
 
     let cost = net.cost(&training_data);
-    
-    // println!("Cost: {}", );
+
     dbg!(cost);
 }
